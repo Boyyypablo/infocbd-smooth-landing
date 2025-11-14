@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { InfoCard } from "@/components/InfoCard";
 import { Link } from "react-router-dom";
-import { Leaf, Shield, Heart, ArrowRight } from "lucide-react";
+import { Leaf, ArrowRight } from "lucide-react";
 
 const Index = () => {
   return (
@@ -72,21 +72,18 @@ const Index = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <InfoCard
-                icon={<Leaf className="w-7 h-7" />}
                 title="Natural e Puro"
                 description="Produtos extraídos de plantas cultivadas organicamente, sem aditivos químicos prejudiciais. Garantimos qualidade em cada etapa do processo."
                 delay="0.5s"
               />
               
               <InfoCard
-                icon={<Shield className="w-7 h-7" />}
                 title="Segurança Comprovada"
                 description="Todos os nossos produtos são testados em laboratórios certificados, garantindo pureza, potência e ausência de contaminantes."
                 delay="0.6s"
               />
               
               <InfoCard
-                icon={<Heart className="w-7 h-7" />}
                 title="Bem-estar Total"
                 description="CBD contribui para o equilíbrio do corpo, ajudando no relaxamento, qualidade do sono e alívio de tensões do dia a dia."
                 delay="0.7s"
