@@ -37,12 +37,8 @@ const Formulario = () => {
               animationDelay: "0.2s"
             }}
           >
-            <iframe
-              src="https://form.typeform.com/to/YOUR_FORM_ID"
-              className="w-full h-full"
-              frameBorder="0"
-              title="Formulário de Contato"
-            />
+            <div data-tf-live="01KA19WXZW6FQXRD4B7BE27W3S"></div>
+            <script src="//embed.typeform.com/next/embed.js"></script>
           </div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
