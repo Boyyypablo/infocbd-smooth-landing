@@ -1,15 +1,13 @@
-import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface InfoCardProps {
-  icon: ReactNode;
   title: string;
   description: string;
   delay?: string;
   className?: string;
 }
 
-export const InfoCard = ({ icon, title, description, delay = "0s", className }: InfoCardProps) => {
+export const InfoCard = ({ title, description, delay = "0s", className }: InfoCardProps) => {
   return (
     <div
       className={cn(
@@ -18,10 +16,7 @@ export const InfoCard = ({ icon, title, description, delay = "0s", className }: 
       )}
       style={{ animationDelay: delay }}
     >
-      <div className="mb-6 inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors duration-300">
-        {icon}
-      </div>
-      <h3 className="text-xl font-semibold text-foreground mb-3">{title}</h3>
+      <h3 className="text-3xl font-bold text-primary mb-4 group-hover:text-primary/80 transition-colors">{title}</h3>
       <p className="text-muted-foreground leading-relaxed">{description}</p>
     </div>
   );
