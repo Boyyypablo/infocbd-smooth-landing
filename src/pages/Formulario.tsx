@@ -1,0 +1,57 @@
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
+const Formulario = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-6 py-4">
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Voltar</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="pt-24 pb-12 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Entre em Contato
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Preencha o formulário abaixo e entraremos em contato em breve
+            </p>
+          </div>
+
+          {/* Typeform Embed */}
+          <div 
+            className="w-full rounded-2xl overflow-hidden shadow-[var(--shadow-soft)] animate-fade-in"
+            style={{ 
+              height: "600px",
+              animationDelay: "0.2s"
+            }}
+          >
+            <iframe
+              src="https://form.typeform.com/to/YOUR_FORM_ID"
+              className="w-full h-full"
+              frameBorder="0"
+              title="Formulário de Contato"
+            />
+          </div>
+
+          <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <p>Suas informações estão protegidas e serão tratadas com confidencialidade</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Formulario;
