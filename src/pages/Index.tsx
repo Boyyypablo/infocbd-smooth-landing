@@ -40,7 +40,7 @@ const Index = () => {
             </p>
             
             <div 
-              className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
+              className="flex justify-center animate-fade-in"
               style={{ animationDelay: "0.3s" }}
             >
               <Link to="/formulario">
@@ -49,9 +49,6 @@ const Index = () => {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button size="lg" variant="soft">
-                Conheça Nossos Produtos
-              </Button>
             </div>
           </div>
         </div>
