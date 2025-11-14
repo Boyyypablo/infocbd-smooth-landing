@@ -1,7 +1,19 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
 
 const Formulario = () => {
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//embed.typeform.com/next/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -33,13 +45,11 @@ const Formulario = () => {
           <div 
             className="w-full rounded-2xl overflow-hidden shadow-[var(--shadow-soft)] animate-fade-in"
             style={{ 
-              height: "600px",
+              minHeight: "600px",
               animationDelay: "0.2s"
             }}
-          >
-            <div data-tf-live="01KA19WXZW6FQXRD4B7BE27W3S"></div>
-            <script src="//embed.typeform.com/next/embed.js"></script>
-          </div>
+            data-tf-live="01KA19WXZW6FQXRD4B7BE27W3S"
+          ></div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <p>Suas informações estão protegidas e serão tratadas com confidencialidade</p>
