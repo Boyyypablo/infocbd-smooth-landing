@@ -35,8 +35,7 @@ const Index = () => {
               className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in"
               style={{ animationDelay: "0.2s" }}
             >
-              Descubra os benefícios do CBD com informações confiáveis e baseadas em ciência. 
-              Sua jornada para o bem-estar começa aqui.
+             ALGUM TEXTO AQUI TBM
             </p>
             
             <div 
@@ -66,26 +65,26 @@ const Index = () => {
                 Por que escolher o CBD?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Conheça os principais benefícios respaldados pela ciência
+                ALGUM TEXTO AQUI
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <InfoCard
                 title="Natural e Puro"
-                description="Produtos extraídos de plantas cultivadas organicamente, sem aditivos químicos prejudiciais. Garantimos qualidade em cada etapa do processo."
+                description=" ALGUM TEXTO AQUI"
                 delay="0.5s"
               />
               
               <InfoCard
                 title="Segurança Comprovada"
-                description="Todos os nossos produtos são testados em laboratórios certificados, garantindo pureza, potência e ausência de contaminantes."
+                description=" ALGUM TEXTO AQUI"
                 delay="0.6s"
               />
               
               <InfoCard
                 title="Bem-estar Total"
-                description="CBD contribui para o equilíbrio do corpo, ajudando no relaxamento, qualidade do sono e alívio de tensões do dia a dia."
+                description="ALGUM TEXTO AQUI"
                 delay="0.7s"
               />
             </div>
