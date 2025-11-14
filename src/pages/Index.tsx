@@ -5,7 +5,7 @@ import { Leaf, Shield, Heart, ArrowRight } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/10">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/20">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background decoration */}
