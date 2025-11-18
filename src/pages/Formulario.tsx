@@ -3,6 +3,11 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 
 const Formulario = () => {
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, []);
+
   useEffect(() => {
     // Remove any existing TypeForm scripts and widgets first
     const existingScript = document.querySelector('script[src*="typeform.com"]');
@@ -81,7 +86,7 @@ const Formulario = () => {
               minHeight: "600px",
               animationDelay: "0.2s"
             }}
-            data-tf-live="01KA19WXZW6FQXRD4B7BE27W3S"
+            data-tf-live="01KACB9285W9X86T4MGHWNSH3K"
           ></div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
