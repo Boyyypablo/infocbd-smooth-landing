@@ -4,13 +4,46 @@ import { useEffect } from "react";
 
 const Formulario = () => {
   useEffect(() => {
+    // Remove any existing TypeForm scripts and widgets first
+    const existingScript = document.querySelector('script[src*="typeform.com"]');
+    if (existingScript && existingScript.parentNode) {
+      existingScript.parentNode.removeChild(existingScript);
+    }
+    
+    // Clean up any existing TypeForm widgets
+    const typeformWidgets = document.querySelectorAll('[data-tf-widget], [data-tf-live]');
+    typeformWidgets.forEach((widget) => {
+      if (widget.parentNode) {
+        widget.innerHTML = '';
+      }
+    });
+
+    // Create new script
     const script = document.createElement('script');
     script.src = '//embed.typeform.com/next/embed.js';
     script.async = true;
+    script.id = 'typeform-embed-script';
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      // Cleanup script
+      const scriptToRemove = document.getElementById('typeform-embed-script');
+      if (scriptToRemove && scriptToRemove.parentNode) {
+        scriptToRemove.parentNode.removeChild(scriptToRemove);
+      }
+      
+      // Clean up all TypeForm widgets and iframes
+      const allTypeformElements = document.querySelectorAll('[data-tf-widget], [data-tf-live], iframe[src*="typeform.com"]');
+      allTypeformElements.forEach((element) => {
+        if (element.parentNode) {
+          element.parentNode.removeChild(element);
+        }
+      });
+      
+      // Clean up any TypeForm global objects
+      if (window.tf) {
+        delete (window as any).tf;
+      }
     };
   }, []);
 
