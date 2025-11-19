@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 
 // Lazy load routes for code splitting
 const Formulario = lazy(() => import("./pages/Formulario"));
+const Identificacao = lazy(() => import("./pages/Identificacao"));
 const Processamento = lazy(() => import("./pages/Processamento"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -42,6 +43,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/formulario" element={<Formulario />} />
+            <Route path="/identificacao" element={<Identificacao />} />
             <Route path="/processamento" element={<Processamento />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

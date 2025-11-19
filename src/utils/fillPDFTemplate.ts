@@ -1,4 +1,5 @@
 import { PDFDocument, rgb } from 'pdf-lib';
+import { pdfCoordinates } from '@/config/pdfCoordinates';
 
 /**
  * Preenche o template PDF com nome e CPF do usuário
@@ -9,7 +10,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 export async function fillPDFTemplate(nome: string, cpf: string): Promise<Blob> {
   try {
     // Carregar o template PDF
-    const templatePath = '/receita para assinar.pdf';
+    const templatePath = '/receita sem assinatura.pdf';
     const response = await fetch(templatePath);
     
     if (!response.ok) {
@@ -59,34 +60,30 @@ export async function fillPDFTemplate(nome: string, cpf: string): Promise<Blob> 
     // As coordenadas são em pontos (72 pontos = 1 polegada), começando do canto inferior esquerdo
     
     if (!filledFields) {
-      // Coordenadas padrão - AJUSTE CONFORME SEU PDF
-      // Para encontrar as coordenadas corretas, você pode:
-      // 1. Abrir o PDF em um editor e verificar as posições
-      // 2. Usar uma ferramenta de inspeção de PDF
-      // 3. Testar valores até encontrar a posição correta
+      // Usar coordenadas do arquivo de configuração
+      // O sistema pdf-lib usa coordenadas do canto inferior esquerdo
+      // Se y for 0, calcular baseado na altura da página (comportamento padrão)
+      const nomeY = pdfCoordinates.nome.y === 0 
+        ? height - 200 
+        : height - pdfCoordinates.nome.y;
       
-      // Exemplo: Nome geralmente fica na parte superior ou meio superior
-      // Ajuste estes valores conforme necessário
-      const nomeX = 100; // Distância da esquerda em pontos
-      const nomeY = height - 200; // Distância do topo (altura - distância do topo)
+      const cpfY = pdfCoordinates.cpf.y === 0 
+        ? height - 230 
+        : height - pdfCoordinates.cpf.y;
       
-      // CPF geralmente fica próximo ao nome, um pouco abaixo
-      const cpfX = 100;
-      const cpfY = height - 230;
-      
-      // Adicionar texto ao PDF
+      // Adicionar texto ao PDF usando as coordenadas configuradas
       firstPage.drawText(nome, {
-        x: nomeX,
+        x: pdfCoordinates.nome.x,
         y: nomeY,
-        size: 12,
+        size: pdfCoordinates.nome.size || 12,
         font: helveticaFont,
         color: rgb(0, 0, 0),
       });
       
       firstPage.drawText(formattedCPF, {
-        x: cpfX,
+        x: pdfCoordinates.cpf.x,
         y: cpfY,
-        size: 12,
+        size: pdfCoordinates.cpf.size || 12,
         font: helveticaFont,
         color: rgb(0, 0, 0),
       });

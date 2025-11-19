@@ -61,12 +61,82 @@ const Formulario = () => {
     };
   }, []);
 
+  // Interceptar redirecionamentos do Typeform
+  useEffect(() => {
+    let redirectBlocked = false;
+    
+    // Interceptar mudanças na URL antes que o redirecionamento aconteça
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      const url = args[2]?.toString() || '';
+      // Se o Typeform tentar redirecionar, interceptar
+      if (!redirectBlocked && (url.includes('typeform.com/to/') || url.includes('wa.me') || url.includes('whatsapp'))) {
+        console.log('🚫 Intercepted pushState redirect to:', url);
+        redirectBlocked = true;
+        navigate('/identificacao', { replace: true });
+        return;
+      }
+      return originalPushState.apply(history, args);
+    };
+    
+    history.replaceState = function(...args) {
+      const url = args[2]?.toString() || '';
+      if (!redirectBlocked && (url.includes('typeform.com/to/') || url.includes('wa.me') || url.includes('whatsapp'))) {
+        console.log('🚫 Intercepted replaceState redirect to:', url);
+        redirectBlocked = true;
+        navigate('/identificacao', { replace: true });
+        return;
+      }
+      return originalReplaceState.apply(history, args);
+    };
+
+    // Interceptar window.location changes
+    const checkLocation = () => {
+      if (redirectBlocked) return;
+      const currentUrl = window.location.href;
+      if (currentUrl.includes('typeform.com/to/') || currentUrl.includes('wa.me') || currentUrl.includes('whatsapp')) {
+        redirectBlocked = true;
+        console.log('🚫 Intercepted window.location redirect to:', currentUrl);
+        navigate('/identificacao', { replace: true });
+      }
+    };
+
+    const locationCheckInterval = setInterval(checkLocation, 50);
+
+    // Interceptar beforeunload para tentar prevenir redirecionamento
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const currentUrl = window.location.href;
+      if (currentUrl.includes('wa.me') || currentUrl.includes('whatsapp')) {
+        e.preventDefault();
+        e.returnValue = '';
+        navigate('/identificacao', { replace: true });
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      history.pushState = originalPushState;
+      history.replaceState = originalReplaceState;
+      clearInterval(locationCheckInterval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [navigate]);
+
   // Escutar eventos do Typeform para redirecionar após conclusão
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.origin.includes('typeform.com')) return;
 
       const data = event.data;
+      
+      // Log todos os eventos para debug
+      if (data.type) {
+        console.log('📨 Typeform event:', data.type, data);
+      }
       
       // Verificar diferentes formatos de eventos de conclusão
       const isFormComplete = 
@@ -83,82 +153,37 @@ const Formulario = () => {
         (typeof data === 'object' && 'form_response' in data) ||
         (typeof data === 'object' && 'response' in data);
       
-      // Quando o formulário for completado, redirecionar para processamento
+      // Quando o formulário for completado, redirecionar para identificação
       if (isFormComplete) {
-        console.log('✅ Form completed!', data);
+        console.log('✅ Form completed! Redirecting to identification...');
         
-        // Extrair nome e CPF das respostas (se disponível)
-        const formResponse = data.form_response || data.response || data;
-        let nome = '';
-        let cpf = '';
-
-        if (formResponse && formResponse.answers) {
-          formResponse.answers.forEach((answer: any) => {
-            const fieldRef = (answer.field?.ref || '').toLowerCase();
-            const fieldVariable = (answer.field?.variable || '').toLowerCase();
-            const fieldId = (answer.field?.id || '').toLowerCase();
-            const fieldTitle = (answer.field?.title || '').toLowerCase();
-            
-            let answerValue = '';
-            if (answer.text) answerValue = answer.text;
-            else if (answer.email) answerValue = answer.email;
-            else if (answer.phone_number) answerValue = answer.phone_number;
-            else if (answer.choice?.label) answerValue = answer.choice.label;
-            else if (answer.choice?.other) answerValue = answer.choice.other;
-            else if (answer.number) answerValue = String(answer.number);
-            else if (answer.date) answerValue = answer.date;
-            
-            if (
-              fieldRef.includes('nome') ||
-              fieldVariable.includes('nome') ||
-              fieldId.includes('nome') ||
-              fieldTitle.includes('nome') ||
-              fieldTitle.includes('name') ||
-              fieldTitle.includes('paciente')
-            ) {
-              nome = answerValue || nome;
-            }
-            
-            if (
-              fieldRef.includes('cpf') ||
-              fieldVariable.includes('cpf') ||
-              fieldId.includes('cpf') ||
-              fieldTitle.includes('cpf') ||
-              fieldTitle.includes('documento') ||
-              fieldTitle.includes('identidade') ||
-              answerValue.match(/\d{3}[.-]?\d{3}[.-]?\d{3}[.-]?\d{2}/)
-            ) {
-              cpf = answerValue || cpf;
-            }
-          });
-        }
-
-        // Tentar buscar em hidden fields, variables, etc.
-        if ((!nome || !cpf) && formResponse?.hidden) {
-          const hidden = formResponse.hidden;
-          nome = hidden.nome || hidden.name || hidden.paciente || nome;
-          cpf = hidden.cpf || hidden.cpf_number || hidden.documento || cpf;
-        }
-
-        if ((!nome || !cpf) && formResponse?.variables) {
-          const variables = formResponse.variables;
-          nome = variables.nome || variables.name || variables.paciente || nome;
-          cpf = variables.cpf || variables.cpf_number || variables.documento || cpf;
-        }
-
-        console.log('Extracted data - Nome:', nome, 'CPF:', cpf);
-
-        // Redirecionar para página de processamento
-        navigate('/processamento', {
-          state: { nome: nome || 'Não informado', cpf: cpf || 'Não informado' }
-        });
+        // Forçar redirecionamento imediatamente
+        setTimeout(() => {
+          navigate('/identificacao', { replace: true });
+        }, 100);
       }
     };
 
     messageHandlerRef.current = handleMessage;
     window.addEventListener('message', handleMessage, false);
 
+    // Interceptar cliques em links do Typeform que possam redirecionar
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      if (link && (link.href.includes('wa.me') || link.href.includes('whatsapp') || link.href.includes('typeform.com/to/'))) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🚫 Intercepted link click:', link.href);
+        navigate('/identificacao', { replace: true });
+        return false;
+      }
+    };
+
+    document.addEventListener('click', handleClick, true);
+
     return () => {
+      document.removeEventListener('click', handleClick, true);
       if (messageHandlerRef.current) {
         window.removeEventListener('message', messageHandlerRef.current);
         messageHandlerRef.current = null;
@@ -206,6 +231,7 @@ const Formulario = () => {
             data-tf-hide-footer
             data-tf-transitive-search-params
             data-tf-medium="snippet"
+            data-tf-redirect="false"
           ></div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>

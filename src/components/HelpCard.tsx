@@ -11,8 +11,8 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
   const getImagePath = (cardTitle: string): string | null => {
     const imageMap: Record<string, string> = {
       'Dor crônica': '/torso-dor-cronica.png',
-      'Saúde mental': '/mental.png',
-      'Doenças neurológicas': '/saude.png',
+      'Saúde mental': '/saude.png',
+      'Doenças neurológicas': '/mental.png',
       'TEA, TDAH e cuidados paliativos': '/tdah.png',
     };
     return imageMap[cardTitle] || null;
@@ -23,28 +23,19 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
   
   return (
     <div className="flex flex-col">
-      <div className="relative bg-gradient-to-b from-[#87CEEB] to-[#E0F6FF] rounded-t-lg overflow-hidden" style={{ minHeight: '280px' }}>
+      <div className="relative bg-white rounded-t-lg overflow-hidden" style={{ minHeight: '280px' }}>
         {hasCustomImage ? (
           // Card com imagem customizada
           <>
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* Fundo branco para todas as imagens */}
-              <div className="absolute inset-0 bg-white"></div>
-              
-              {/* Fundo adicional para imagens com transparência (Saúde mental e TEA/TDAH) */}
-              {(title === 'Saúde mental' || title === 'TEA, TDAH e cuidados paliativos') && (
-                <div className="absolute inset-0 bg-gradient-to-b from-[#E8F4F8] to-[#F0F8FF]"></div>
-              )}
-              
+            <div className="absolute inset-0 flex items-center justify-center bg-white">
               <img 
                 src={imagePath} 
                 alt={`Ilustração para ${title}`}
-                className="relative w-full h-full object-contain p-8 z-10"
+                className="relative w-full h-full object-contain p-6 md:p-8 z-10"
                 style={{
-                  // Garantir que imagens com transparência tenham fundo sólido
-                  backgroundColor: (title === 'Saúde mental' || title === 'TEA, TDAH e cuidados paliativos') 
-                    ? 'transparent' 
-                    : 'white'
+                  maxHeight: '100%',
+                  maxWidth: '100%',
+                  objectFit: 'contain'
                 }}
                 onError={(e) => {
                   // Fallback se a imagem não existir
