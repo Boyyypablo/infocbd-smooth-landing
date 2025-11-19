@@ -27,11 +27,25 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
         {hasCustomImage ? (
           // Card com imagem customizada
           <>
-            <div className="absolute inset-0 bg-white flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center">
+              {/* Fundo branco para todas as imagens */}
+              <div className="absolute inset-0 bg-white"></div>
+              
+              {/* Fundo adicional para imagens com transparência (Saúde mental e TEA/TDAH) */}
+              {(title === 'Saúde mental' || title === 'TEA, TDAH e cuidados paliativos') && (
+                <div className="absolute inset-0 bg-gradient-to-b from-[#E8F4F8] to-[#F0F8FF]"></div>
+              )}
+              
               <img 
                 src={imagePath} 
                 alt={`Ilustração para ${title}`}
-                className="w-full h-full object-contain p-8"
+                className="relative w-full h-full object-contain p-8 z-10"
+                style={{
+                  // Garantir que imagens com transparência tenham fundo sólido
+                  backgroundColor: (title === 'Saúde mental' || title === 'TEA, TDAH e cuidados paliativos') 
+                    ? 'transparent' 
+                    : 'white'
+                }}
                 onError={(e) => {
                   // Fallback se a imagem não existir
                   const target = e.target as HTMLImageElement;

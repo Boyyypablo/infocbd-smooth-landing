@@ -66,9 +66,8 @@ const Processamento = () => {
   };
 
   const handleContinue = () => {
-    // Redirecionar para o primeiro Typeform
-    // Você pode usar window.location.href ou criar uma rota específica
-    window.location.href = 'https://form.typeform.com/to/01KACB9285W9X86T4MGHWNSH3K';
+    // Redirecionar para o WhatsApp
+    window.location.href = 'https://wa.me/p/25222190630776097/556131424550';
   };
 
   return (
