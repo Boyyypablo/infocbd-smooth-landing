@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 
 // Lazy load routes for code splitting
 const Formulario = lazy(() => import("./pages/Formulario"));
+const Processamento = lazy(() => import("./pages/Processamento"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -28,7 +29,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_relativeSplatPath: true }}>
         <ScrollToTop />
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center">
@@ -41,6 +42,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/formulario" element={<Formulario />} />
+            <Route path="/processamento" element={<Processamento />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

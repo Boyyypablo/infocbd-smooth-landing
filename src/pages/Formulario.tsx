@@ -1,25 +1,47 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+// Declaração de tipos para o Typeform
+declare global {
+  interface Window {
+    tf?: {
+      makePopup: (url: string, options: any) => any;
+      embed: (element: HTMLElement, options: any) => any;
+    };
+  }
+}
 
 const Formulario = () => {
+  const navigate = useNavigate();
+  const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
+
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
+  // Carregar script do Typeform uma única vez
   useEffect(() => {
-    // Remove any existing TypeForm scripts and widgets first
+    // Remove any existing TypeForm scripts first
     const existingScript = document.querySelector('script[src*="typeform.com"]');
     if (existingScript && existingScript.parentNode) {
       existingScript.parentNode.removeChild(existingScript);
     }
-    
-    // Clean up any existing TypeForm widgets
-    const typeformWidgets = document.querySelectorAll('[data-tf-widget], [data-tf-live]');
-    typeformWidgets.forEach((widget) => {
-      if (widget.parentNode) {
-        widget.innerHTML = '';
+
+    // Limpar qualquer iframe antigo do Typeform
+    const oldIframes = document.querySelectorAll('iframe[src*="typeform.com"]');
+    oldIframes.forEach(iframe => {
+      if (iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+    });
+
+    // Limpar qualquer elemento com data-tf-live antigo
+    const oldTypeforms = document.querySelectorAll('[data-tf-live]:not([data-tf-live="01KACB9285W9X86T4MGHWNSH3K"])');
+    oldTypeforms.forEach(el => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
       }
     });
 
@@ -31,26 +53,118 @@ const Formulario = () => {
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup script
+      // Cleanup script apenas no unmount final
       const scriptToRemove = document.getElementById('typeform-embed-script');
       if (scriptToRemove && scriptToRemove.parentNode) {
         scriptToRemove.parentNode.removeChild(scriptToRemove);
       }
-      
-      // Clean up all TypeForm widgets and iframes
-      const allTypeformElements = document.querySelectorAll('[data-tf-widget], [data-tf-live], iframe[src*="typeform.com"]');
-      allTypeformElements.forEach((element) => {
-        if (element.parentNode) {
-          element.parentNode.removeChild(element);
-        }
-      });
-      
-      // Clean up any TypeForm global objects
-      if (window.tf) {
-        delete (window as any).tf;
-      }
     };
   }, []);
+
+  // Escutar eventos do Typeform para redirecionar após conclusão
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (!event.origin.includes('typeform.com')) return;
+
+      const data = event.data;
+      
+      // Verificar diferentes formatos de eventos de conclusão
+      const isFormComplete = 
+        data.type === 'form-submit' || 
+        data.type === 'form-complete' ||
+        data.type === 'TF_FORM_COMPLETE' ||
+        data.type === 'TF_FORM_SUBMIT' ||
+        data.type === 'formSubmit' ||
+        data.type === 'formComplete' ||
+        (data.type === 'TF_EVENT' && data.event === 'form-complete') ||
+        (data.type === 'TF_EVENT' && data.event === 'formSubmit') ||
+        (data.event === 'form-complete') ||
+        (data.event === 'formSubmit') ||
+        (typeof data === 'object' && 'form_response' in data) ||
+        (typeof data === 'object' && 'response' in data);
+      
+      // Quando o formulário for completado, redirecionar para processamento
+      if (isFormComplete) {
+        console.log('✅ Form completed!', data);
+        
+        // Extrair nome e CPF das respostas (se disponível)
+        const formResponse = data.form_response || data.response || data;
+        let nome = '';
+        let cpf = '';
+
+        if (formResponse && formResponse.answers) {
+          formResponse.answers.forEach((answer: any) => {
+            const fieldRef = (answer.field?.ref || '').toLowerCase();
+            const fieldVariable = (answer.field?.variable || '').toLowerCase();
+            const fieldId = (answer.field?.id || '').toLowerCase();
+            const fieldTitle = (answer.field?.title || '').toLowerCase();
+            
+            let answerValue = '';
+            if (answer.text) answerValue = answer.text;
+            else if (answer.email) answerValue = answer.email;
+            else if (answer.phone_number) answerValue = answer.phone_number;
+            else if (answer.choice?.label) answerValue = answer.choice.label;
+            else if (answer.choice?.other) answerValue = answer.choice.other;
+            else if (answer.number) answerValue = String(answer.number);
+            else if (answer.date) answerValue = answer.date;
+            
+            if (
+              fieldRef.includes('nome') ||
+              fieldVariable.includes('nome') ||
+              fieldId.includes('nome') ||
+              fieldTitle.includes('nome') ||
+              fieldTitle.includes('name') ||
+              fieldTitle.includes('paciente')
+            ) {
+              nome = answerValue || nome;
+            }
+            
+            if (
+              fieldRef.includes('cpf') ||
+              fieldVariable.includes('cpf') ||
+              fieldId.includes('cpf') ||
+              fieldTitle.includes('cpf') ||
+              fieldTitle.includes('documento') ||
+              fieldTitle.includes('identidade') ||
+              answerValue.match(/\d{3}[.-]?\d{3}[.-]?\d{3}[.-]?\d{2}/)
+            ) {
+              cpf = answerValue || cpf;
+            }
+          });
+        }
+
+        // Tentar buscar em hidden fields, variables, etc.
+        if ((!nome || !cpf) && formResponse?.hidden) {
+          const hidden = formResponse.hidden;
+          nome = hidden.nome || hidden.name || hidden.paciente || nome;
+          cpf = hidden.cpf || hidden.cpf_number || hidden.documento || cpf;
+        }
+
+        if ((!nome || !cpf) && formResponse?.variables) {
+          const variables = formResponse.variables;
+          nome = variables.nome || variables.name || variables.paciente || nome;
+          cpf = variables.cpf || variables.cpf_number || variables.documento || cpf;
+        }
+
+        console.log('Extracted data - Nome:', nome, 'CPF:', cpf);
+
+        // Redirecionar para página de processamento
+        navigate('/processamento', {
+          state: { nome: nome || 'Não informado', cpf: cpf || 'Não informado' }
+        });
+      }
+    };
+
+    messageHandlerRef.current = handleMessage;
+    window.addEventListener('message', handleMessage, false);
+
+    return () => {
+      if (messageHandlerRef.current) {
+        window.removeEventListener('message', messageHandlerRef.current);
+        messageHandlerRef.current = null;
+      }
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,6 +201,11 @@ const Formulario = () => {
               animationDelay: "0.2s"
             }}
             data-tf-live="01KACB9285W9X86T4MGHWNSH3K"
+            data-tf-opacity="100"
+            data-tf-hide-headers
+            data-tf-hide-footer
+            data-tf-transitive-search-params
+            data-tf-medium="snippet"
           ></div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
