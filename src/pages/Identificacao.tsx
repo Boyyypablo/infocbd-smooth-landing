@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validateCPF } from "@/utils/validateCPF";
 
 const Identificacao = () => {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ const Identificacao = () => {
       newErrors.cpf = "CPF é obrigatório";
     } else if (cpfNumbers.length !== 11) {
       newErrors.cpf = "CPF deve ter 11 dígitos";
+    } else if (!validateCPF(cpfNumbers)) {
+      newErrors.cpf = "CPF inválido. Por favor, verifique os dígitos.";
     }
 
     setErrors(newErrors);

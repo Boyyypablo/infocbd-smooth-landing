@@ -147,7 +147,7 @@ const Index = () => {
             <div className="text-white flex flex-col items-end justify-end h-full">
               <div className="text-right mb-6 pr-0">
                 <p className="text-base md:text-lg lg:text-xl max-w-sm leading-relaxed">
-                  Telesaúde especializada em tratamento com cannabis medicinal, do médico à farmácia.
+                  Telesaúde especializada em tratamento com cannabis medicinal, do médicamento ao médico.
                 </p>
               </div>
               <div className="flex justify-end pr-0">
@@ -338,7 +338,7 @@ const Index = () => {
                   style={{ transitionDelay: isTreatmentVisible ? '0.7s' : '0s' }}
                 >
                   <button className="bg-[#6B2C91] text-white px-8 py-4 rounded-lg font-semibold text-base md:text-lg hover:bg-[#5a2478] transition-all shadow-lg hover:shadow-xl hover:scale-105">
-                    Conhecer nosso time
+                    Vamos Lá
                   </button>
                 </div>
               </div>
@@ -402,7 +402,7 @@ const Index = () => {
             {/* Endereço */}
             <div>
               <h3 className="font-bold text-lg mb-4">Endereço</h3>
-              <p className="text-base">xxxxxx</p>
+              <p className="text-base">Atendimento online em todo o Brasil</p>
             </div>
 
             {/* Redes Sociais e Responsável Técnico */}

@@ -75,7 +75,7 @@ const Formulario = () => {
       if (!redirectBlocked && (url.includes('typeform.com/to/') || url.includes('wa.me') || url.includes('whatsapp'))) {
         console.log('🚫 Intercepted pushState redirect to:', url);
         redirectBlocked = true;
-        navigate('/identificacao', { replace: true });
+        navigate('/analise-medica', { replace: true });
         return;
       }
       return originalPushState.apply(history, args);
@@ -86,7 +86,7 @@ const Formulario = () => {
       if (!redirectBlocked && (url.includes('typeform.com/to/') || url.includes('wa.me') || url.includes('whatsapp'))) {
         console.log('🚫 Intercepted replaceState redirect to:', url);
         redirectBlocked = true;
-        navigate('/identificacao', { replace: true });
+        navigate('/analise-medica', { replace: true });
         return;
       }
       return originalReplaceState.apply(history, args);
@@ -99,7 +99,7 @@ const Formulario = () => {
       if (currentUrl.includes('typeform.com/to/') || currentUrl.includes('wa.me') || currentUrl.includes('whatsapp')) {
         redirectBlocked = true;
         console.log('🚫 Intercepted window.location redirect to:', currentUrl);
-        navigate('/identificacao', { replace: true });
+        navigate('/analise-medica', { replace: true });
       }
     };
 
@@ -111,7 +111,7 @@ const Formulario = () => {
       if (currentUrl.includes('wa.me') || currentUrl.includes('whatsapp')) {
         e.preventDefault();
         e.returnValue = '';
-        navigate('/identificacao', { replace: true });
+        navigate('/analise-medica', { replace: true });
         return '';
       }
     };
@@ -153,13 +153,13 @@ const Formulario = () => {
         (typeof data === 'object' && 'form_response' in data) ||
         (typeof data === 'object' && 'response' in data);
       
-      // Quando o formulário for completado, redirecionar para identificação
+      // Quando o formulário for completado, redirecionar para análise médica
       if (isFormComplete) {
-        console.log('✅ Form completed! Redirecting to identification...');
+        console.log('✅ Form completed! Redirecting to medical analysis...');
         
         // Forçar redirecionamento imediatamente
         setTimeout(() => {
-          navigate('/identificacao', { replace: true });
+          navigate('/analise-medica', { replace: true });
         }, 100);
       }
     };
@@ -175,7 +175,7 @@ const Formulario = () => {
         e.preventDefault();
         e.stopPropagation();
         console.log('🚫 Intercepted link click:', link.href);
-        navigate('/identificacao', { replace: true });
+        navigate('/analise-medica', { replace: true });
         return false;
       }
     };
