@@ -15,15 +15,18 @@ const Index = () => {
 
   // Reset states when component mounts or location changes
   useLayoutEffect(() => {
-    setIsVisible(false);
-    setIsTreatmentVisible(false);
-    setIsCtaVisible(false);
-    setImageError(false);
-  }, [location.pathname]);
-
-  // Scroll to top on mount and route change
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Only reset if actually on the index page
+    if (location.pathname === '/') {
+      setIsVisible(false);
+      setIsTreatmentVisible(false);
+      setIsCtaVisible(false);
+      setImageError(false);
+      
+      // Scroll to top
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      });
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -128,9 +131,9 @@ const Index = () => {
     };
   }, [location.pathname]);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-y-auto">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-start overflow-hidden bg-gradient-to-b from-[#FF6B35] via-[#D8437F] to-[#6B2C91]">
+      <section className="relative min-h-screen flex items-start bg-gradient-to-b from-[#FF6B35] via-[#D8437F] to-[#6B2C91]">
         <div className="container mx-auto px-6 pt-20 md:pt-32 w-full">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start min-h-[70vh]">
             {/* Lado Esquerdo */}

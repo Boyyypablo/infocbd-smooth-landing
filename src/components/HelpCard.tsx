@@ -26,43 +26,35 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
       <div className="relative bg-white rounded-t-lg overflow-hidden" style={{ minHeight: '280px' }}>
         {hasCustomImage ? (
           // Card com imagem customizada
-          <>
-            <div className="absolute inset-0 flex items-center justify-center bg-white">
-              <img 
-                src={imagePath} 
-                alt={`Ilustração para ${title}`}
-                className="relative w-full h-full object-contain p-6 md:p-8 z-10"
-                style={{
-                  maxHeight: '100%',
-                  maxWidth: '100%',
-                  objectFit: 'contain'
-                }}
-                onError={(e) => {
-                  // Fallback se a imagem não existir
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.parentElement;
-                  if (fallback) {
-                    fallback.innerHTML = `
-                      <div class="absolute inset-0 bg-gradient-to-b from-[#87CEEB] to-[#B0E0E6]"></div>
-                      <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="text-center text-gray-500 text-sm">
-                          <p>Imagem não encontrada</p>
-                          <p class="text-xs mt-2">Coloque a imagem em /public${imagePath}</p>
-                        </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-white">
+            <img 
+              src={imagePath}
+              alt={`Ilustração para ${title}`}
+              className="relative w-full h-full object-contain p-6 md:p-8 z-10"
+              style={{
+                maxHeight: '100%',
+                maxWidth: '100%',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                // Fallback se a imagem não existir
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.parentElement;
+                if (fallback) {
+                  fallback.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#87CEEB] to-[#B0E0E6]"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="text-center text-gray-500 text-sm">
+                        <p>Imagem não encontrada</p>
+                        <p class="text-xs mt-2">Coloque a imagem em /public${imagePath}</p>
                       </div>
-                    `;
-                  }
-                }}
-              />
-            </div>
-            {/* Botão roxo centralizado */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
-              <button className="bg-[#6B2C91] text-white px-6 py-2 rounded-full font-semibold text-sm md:text-base hover:bg-[#5a2478] transition-all shadow-lg">
-                Saiba Mais
-              </button>
-            </div>
-          </>
+                    </div>
+                  `;
+                }
+              }}
+            />
+          </div>
         ) : (
           // Cards normais com céu, nuvens e colinas (fallback)
           <>
@@ -71,19 +63,19 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
             
             <Cloud />
             <Hills />
-            
-            {/* Botão roxo centralizado */}
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10">
-              <button className="bg-[#6B2C91] text-white px-6 py-2 rounded-full font-semibold text-sm md:text-base hover:bg-[#5a2478] transition-all shadow-lg">
-                Saiba Mais
-              </button>
-            </div>
           </>
         )}
       </div>
+      {/* Título acima do botão */}
       <p className="text-center text-black font-medium mt-4 text-lg">
         {title}
       </p>
+      {/* Botão roxo centralizado - abaixo do título */}
+      <div className="flex justify-center mt-4">
+        <button className="bg-[#6B2C91] text-white px-6 py-2 rounded-full font-semibold text-sm md:text-base hover:bg-[#5a2478] transition-all shadow-lg">
+          Saiba Mais
+        </button>
+      </div>
     </div>
   );
 });

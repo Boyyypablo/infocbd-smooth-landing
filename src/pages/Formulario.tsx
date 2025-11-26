@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { saveTypeformData } from "@/utils/typeformData";
 
 // Declaração de tipos para o Typeform
 declare global {
@@ -18,7 +19,9 @@ const Formulario = () => {
 
   // Scroll to top on mount
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
   }, []);
 
   // Carregar script do Typeform uma única vez
@@ -153,9 +156,31 @@ const Formulario = () => {
         (typeof data === 'object' && 'form_response' in data) ||
         (typeof data === 'object' && 'response' in data);
       
-      // Quando o formulário for completado, redirecionar para análise médica
+      // Quando o formulário for completado, capturar dados e redirecionar
       if (isFormComplete) {
-        console.log('✅ Form completed! Redirecting to medical analysis...');
+        console.log('✅ Form completed! Capturing data and redirecting...');
+        
+        // Tentar capturar dados do typeform
+        try {
+          // Se houver dados no evento, salvar
+          if (data.form_response || data.response) {
+            const responseData = data.form_response || data.response;
+            const answers = responseData?.answers || [];
+            
+            // Procurar pela última resposta (medicamento)
+            const lastAnswer = answers[answers.length - 1];
+            if (lastAnswer) {
+              saveTypeformData({
+                medicamento: {
+                  nome: lastAnswer.text || lastAnswer.choice?.label || 'Medicamento Cannabis Medicinal',
+                  imagem: '/medicamentos/medicamento.jpg'
+                }
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao capturar dados do typeform:', error);
+        }
         
         // Forçar redirecionamento imediatamente
         setTimeout(() => {

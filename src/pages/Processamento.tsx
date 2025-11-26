@@ -14,7 +14,9 @@ const Processamento = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
     
     // Extrair dados da URL ou do state
     const state = location.state as { nome?: string; cpf?: string } | null;
@@ -159,4 +161,10 @@ const Processamento = () => {
 };
 
 export default Processamento;
+
+
+
+
+
+
 

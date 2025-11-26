@@ -5,13 +5,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
 import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
 
 // Lazy load routes for code splitting
 const Formulario = lazy(() => import("./pages/Formulario"));
 const AnaliseMedica = lazy(() => import("./pages/AnaliseMedica"));
 const Identificacao = lazy(() => import("./pages/Identificacao"));
+const Endereco = lazy(() => import("./pages/Endereco"));
+const Pagamento = lazy(() => import("./pages/Pagamento"));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const Sucesso = lazy(() => import("./pages/Sucesso"));
 const Processamento = lazy(() => import("./pages/Processamento"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -20,7 +24,10 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
   }, [pathname]);
 
   return null;
@@ -46,7 +53,11 @@ const App = () => (
             <Route path="/formulario" element={<Formulario />} />
             <Route path="/analise-medica" element={<AnaliseMedica />} />
             <Route path="/identificacao" element={<Identificacao />} />
-            <Route path="/processamento" element={<Processamento />} />
+            <Route path="/endereco" element={<Endereco />} />
+            <Route path="/pagamento" element={<CheckoutPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/checkout-retorno" element={<CheckoutPage />} />
+            <Route path="/sucesso" element={<Sucesso />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

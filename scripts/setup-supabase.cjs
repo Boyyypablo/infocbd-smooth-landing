@@ -1,0 +1,74 @@
+// Script para verificar e criar tabela orders no Supabase
+// Uso: node scripts/setup-supabase.cjs
+
+const dotenv = require('dotenv');
+const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
+
+dotenv.config();
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('[ERRO] Variaveis de ambiente nao configuradas!');
+  console.error('Configure no arquivo .env:');
+  console.error('  SUPABASE_URL=https://seu-projeto.supabase.co');
+  console.error('  SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key');
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+async function setupDatabase() {
+  console.log('[INFO] Conectando ao Supabase...');
+  
+  try {
+    // Verificar se a tabela existe
+    const { data: tables, error: checkError } = await supabase
+      .from('orders')
+      .select('id')
+      .limit(1);
+    
+    if (checkError && checkError.code === 'PGRST116') {
+      // Tabela não existe
+      console.log('[INFO] Tabela "orders" nao existe.');
+      console.log('[INFO] Execute o seguinte SQL no Supabase Dashboard:');
+      console.log('[INFO] Acesse: https://app.supabase.com → Seu Projeto → SQL Editor');
+      
+      // Ler o schema SQL
+      const schemaPath = path.join(__dirname, '..', 'database', 'supabase_schema.sql');
+      const schemaSQL = fs.readFileSync(schemaPath, 'utf-8');
+      
+      console.log('\n' + '='.repeat(60));
+      console.log(schemaSQL);
+      console.log('='.repeat(60));
+      console.log('\n[INFO] Copie e cole o SQL acima no Supabase SQL Editor');
+      
+    } else if (checkError) {
+      console.error('[ERRO] Erro ao verificar tabela:', checkError);
+      process.exit(1);
+    } else {
+      console.log('[OK] Tabela "orders" ja existe!');
+      
+      // Verificar estrutura
+      const { data: testOrder, error: testError } = await supabase
+        .from('orders')
+        .select('*')
+        .limit(1);
+      
+      if (testError) {
+        console.warn('[AVISO] Erro ao verificar estrutura:', testError.message);
+      } else {
+        console.log('[OK] Estrutura da tabela verificada com sucesso!');
+      }
+    }
+    
+  } catch (error) {
+    console.error('[ERRO] Erro ao configurar banco de dados:', error);
+    process.exit(1);
+  }
+}
+
+setupDatabase();
