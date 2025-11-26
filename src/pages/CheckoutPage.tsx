@@ -18,7 +18,7 @@ import { getTypeformData } from "@/utils/typeformData";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_ATTEMPTS = 60;
-const PAYMENT_VALUE = 150.00;
+const PAYMENT_VALUE = 187.00; // R$ 37,00 (avaliação) + R$ 150,00 (remédio)
 
 // ============================================
 // TIPOS
@@ -254,39 +254,20 @@ const CheckoutPage = () => {
                 <div className="flex flex-col items-center">
                   <div className="bg-white p-6 rounded-lg shadow-lg mb-4">
                     <div className="w-64 h-64 bg-white border-2 border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                      {/* QR Code simulado - padrão realista usando SVG */}
-                      <svg viewBox="0 0 33 33" className="w-full h-full" style={{ imageRendering: 'pixelated' }}>
-                        {Array.from({ length: 33 * 33 }).map((_, i) => {
-                          const row = Math.floor(i / 33);
-                          const col = i % 33;
-                          // Criar padrão de QR Code realista
-                          const isDark = 
-                            // Bordas externas
-                            row === 0 || row === 32 || col === 0 || col === 32 ||
-                            // Marcadores de posição (cantos - padrão 7x7 com buraco central)
-                            ((row >= 0 && row <= 6) && (col >= 0 && col <= 6) && 
-                             !((row >= 2 && row <= 4) && (col >= 2 && col <= 4))) ||
-                            ((row >= 0 && row <= 6) && (col >= 26 && col <= 32) && 
-                             !((row >= 2 && row <= 4) && (col >= 28 && col <= 30))) ||
-                            ((row >= 26 && row <= 32) && (col >= 0 && col <= 6) && 
-                             !((row >= 28 && row <= 30) && (col >= 2 && col <= 4))) ||
-                            // Padrão interno (dados) - aleatório mas consistente
-                            ((row * 13 + col * 17) % 23 < 8 && row > 9 && row < 23 && col > 9 && col < 23) ||
-                            // Linhas de alinhamento
-                            (row === 16 && col > 6 && col < 26) ||
-                            (col === 16 && row > 6 && row < 26);
-                          return (
-                            <rect
-                              key={i}
-                              x={col}
-                              y={row}
-                              width={1}
-                              height={1}
-                              fill={isDark ? '#000000' : '#FFFFFF'}
-                            />
-                          );
-                        })}
-                      </svg>
+                      {/* QR Code - Imagem */}
+                      <img
+                        src="/qrcode.png"
+                        alt="QR Code PIX"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          // Fallback caso a imagem não exista
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          const parent = (e.target as HTMLImageElement).parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">QR Code não disponível</div>';
+                          }
+                        }}
+                      />
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 text-center">

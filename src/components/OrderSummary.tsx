@@ -4,8 +4,8 @@ import { X } from "lucide-react";
 
 export const OrderSummary = () => {
   const [medicamento, setMedicamento] = useState<{ nome: string; imagem?: string } | null>(null);
-  const precoMedicamento = 150.00;
-  const precoAvaliacao = 0; // Avaliação médica já incluída
+  const precoMedicamento = 150.00; // Valor do remédio
+  const precoAvaliacao = 37.00; // Valor da avaliação médica
 
   useEffect(() => {
     const typeformData = getTypeformData();
@@ -14,7 +14,7 @@ export const OrderSummary = () => {
     } else {
       // Fallback se não houver dados
       setMedicamento({
-        nome: "Medicamento Cannabis Medicinal",
+        nome: "Canabidiol 23,75mg 10 ml Solução Gotas",
         imagem: "/medicamentos/medicamento.jpg"
       });
     }
@@ -44,9 +44,9 @@ export const OrderSummary = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-gray-800 text-sm md:text-base break-words">{medicamento.nome}</p>
-              <p className="text-xs md:text-sm text-gray-600">Tratamento para um mês</p>
+              <p className="text-xs md:text-sm text-gray-600">Solução Gotas - 10ml</p>
               <p className="text-base md:text-lg font-bold text-[#6B2C91] mt-1">
-                R$ {precoMedicamento.toFixed(2).replace('.', ',')}/mês
+                R$ {precoMedicamento.toFixed(2).replace('.', ',')}
               </p>
             </div>
           </div>
@@ -78,10 +78,10 @@ export const OrderSummary = () => {
         <div className="flex items-center justify-between mb-2">
           <p className="text-base md:text-lg font-bold text-gray-800">Total</p>
           <p className="text-xl md:text-2xl font-bold text-[#6B2C91]">
-            R$ {precoMedicamento.toFixed(2).replace('.', ',')}
+            R$ {(precoMedicamento + precoAvaliacao).toFixed(2).replace('.', ',')}
           </p>
         </div>
-        <p className="text-xs md:text-sm text-gray-600">Valor do plano mensal</p>
+        <p className="text-xs md:text-sm text-gray-600">Valor total (consulta + medicamento)</p>
       </div>
     </div>
   );
