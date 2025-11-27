@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import Cloud from './Cloud';
 import Hills from './Hills';
 
@@ -20,6 +20,40 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
 
   const imagePath = getImagePath(title);
   const hasCustomImage = imagePath !== null;
+  const [currentImageSrc, setCurrentImageSrc] = useState<string>(imagePath || '');
+  const [imageError, setImageError] = useState(false);
+  
+  // Atualizar currentImageSrc quando imagePath mudar
+  useEffect(() => {
+    if (imagePath) {
+      setCurrentImageSrc(imagePath);
+      setImageError(false);
+    }
+  }, [imagePath]);
+  
+  // Tentar variações do nome do arquivo se houver erro
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    const currentSrc = target.src;
+    
+    // Se for TDAH, tentar variações
+    if (currentSrc.includes('TDAH')) {
+      if (currentSrc.includes('/TDAH.png')) {
+        // Tentar com minúsculas
+        setCurrentImageSrc('/tdah.png');
+        return;
+      } else if (currentSrc.includes('/tdah.png')) {
+        // Tentar com maiúsculas na extensão
+        setCurrentImageSrc('/TDAH.PNG');
+        return;
+      }
+    }
+    
+    // Se todas as tentativas falharam
+    console.error('Erro ao carregar imagem:', currentSrc);
+    setImageError(true);
+    target.style.display = 'none';
+  };
   
   return (
     <div className="flex flex-col">
@@ -27,24 +61,26 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
         {hasCustomImage ? (
           // Card com imagem customizada - estilo minimalista (silhueta preta com elementos brancos)
           <div className="w-full h-full flex items-center justify-center bg-white p-6 md:p-8" style={{ minHeight: '280px' }}>
-            <img 
-              src={imagePath || ''}
-              alt={`Ilustração para ${title}`}
-              className="max-w-full max-h-full object-contain"
-              style={{
-                width: 'auto',
-                height: 'auto',
-                maxWidth: '100%',
-                maxHeight: '100%',
-                display: 'block'
-              }}
-              loading="lazy"
-              onError={(e) => {
-                console.error('Erro ao carregar imagem:', imagePath);
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
+            {!imageError ? (
+              <img 
+                src={currentImageSrc || imagePath || ''}
+                alt={`Ilustração para ${title}`}
+                className="max-w-full max-h-full object-contain"
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  display: 'block'
+                }}
+                loading="lazy"
+                onError={handleImageError}
+              />
+            ) : (
+              <div className="text-center text-gray-400 text-sm">
+                <p>Ícone não disponível</p>
+              </div>
+            )}
           </div>
         ) : (
           // Cards normais com céu, nuvens e colinas (fallback)
