@@ -26,20 +26,21 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
       <div className="relative bg-white rounded-t-lg overflow-hidden" style={{ minHeight: '280px' }}>
         {hasCustomImage ? (
           // Card com imagem customizada - estilo minimalista (silhueta preta com elementos brancos)
-          <div className="absolute inset-0 flex items-center justify-center bg-white p-6 md:p-8">
+          <div className="w-full h-full flex items-center justify-center bg-white p-6 md:p-8" style={{ minHeight: '280px' }}>
             <img 
               src={imagePath || ''}
               alt={`Ilustração para ${title}`}
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-full object-contain"
               style={{
-                maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
                 maxWidth: '100%',
-                objectFit: 'contain'
+                maxHeight: '100%',
+                display: 'block'
               }}
               loading="lazy"
               onError={(e) => {
                 console.error('Erro ao carregar imagem:', imagePath);
-                // Não mostrar mensagem de erro ao usuário, apenas no console
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
               }}
