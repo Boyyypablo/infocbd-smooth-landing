@@ -109,26 +109,41 @@ const CheckoutPage = () => {
       setCurrentStep('processing');
       setErrorMessage(null);
 
-      // Criar pedido no backend
-      const response = await fetch(`${BACKEND_URL}/api/create-checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: null,
-          amount: PAYMENT_VALUE,
-        }),
-      });
+      let orderId: string | null = null;
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
-        throw new Error(error.details || error.error || 'Erro ao processar pagamento');
+      // Tentar criar pedido diretamente no Supabase (sem backend)
+      try {
+        const { data: order, error: supabaseError } = await supabase
+          .from('orders')
+          .insert({
+            amount: PAYMENT_VALUE,
+            status: 'APPROVED', // Aprovar automaticamente na simulação
+            description: `Pedido de R$ ${PAYMENT_VALUE.toFixed(2)}`,
+          })
+          .select()
+          .single();
+
+        if (!supabaseError && order && order.id) {
+          orderId = order.id;
+          console.log('[OK] Pedido criado no Supabase:', orderId);
+        } else {
+          console.warn('[AVISO] Erro ao criar pedido no Supabase:', supabaseError);
+          // Continuar com ID simulado
+        }
+      } catch (supabaseError) {
+        console.warn('[AVISO] Erro ao acessar Supabase:', supabaseError);
+        // Continuar com ID simulado
       }
 
-      const data = await response.json();
-      setOrderId(data.order_id);
-      localStorage.setItem('current_order_id', data.order_id);
+      // Se não conseguiu criar no Supabase, gerar ID simulado
+      if (!orderId) {
+        // Gerar ID simulado no formato UUID
+        orderId = `sim_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        console.log('[OK] Usando ID simulado:', orderId);
+      }
+
+      setOrderId(orderId);
+      localStorage.setItem('current_order_id', orderId);
 
       // Redirecionar para página de sucesso após 2 segundos
       setTimeout(() => {
