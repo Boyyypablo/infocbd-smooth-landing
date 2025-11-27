@@ -101,7 +101,7 @@ export async function fillPDFTemplate(nome: string, cpf: string): Promise<Blob> 
 /**
  * Formata CPF adicionando pontos e traço
  * @param cpf - CPF sem formatação ou já formatado
- * @returns CPF formatado (XXX.XXX.XXX-XX)
+ * @returns CPF formatado mascarado com asteriscos (***.***.***-**)
  */
 function formatCPF(cpf: string): string {
   // Remove tudo que não é número
@@ -109,10 +109,10 @@ function formatCPF(cpf: string): string {
   
   // Verifica se tem 11 dígitos
   if (numbers.length !== 11) {
-    return cpf; // Retorna como está se não tiver 11 dígitos
+    return '***.***.***-**'; // Retorna máscara padrão se não tiver 11 dígitos
   }
   
-  // Formata: XXX.XXX.XXX-XX
-  return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  // Retorna CPF mascarado: ***.***.***-**
+  return '***.***.***-**';
 }
 
