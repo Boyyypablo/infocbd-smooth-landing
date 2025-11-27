@@ -15,9 +15,7 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
       'Doenças neurológicas': '/doenças.png',
       'TEA, TDAH e cuidados paliativos': '/TDAH.png',
     };
-    const path = imageMap[cardTitle];
-    // Codificar espaços e caracteres especiais na URL
-    return path ? encodeURI(path) : null;
+    return imageMap[cardTitle] || null;
   };
 
   const imagePath = getImagePath(title);
@@ -38,25 +36,12 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
                 maxWidth: '100%',
                 objectFit: 'contain'
               }}
+              loading="lazy"
               onError={(e) => {
                 console.error('Erro ao carregar imagem:', imagePath);
+                // Não mostrar mensagem de erro ao usuário, apenas no console
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="absolute inset-0 bg-gradient-to-b from-[#87CEEB] to-[#B0E0E6]"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <div class="text-center text-gray-500 text-sm">
-                        <p>Imagem não encontrada: ${imagePath}</p>
-                        <p class="text-xs mt-2">Verifique se o arquivo existe em /public</p>
-                      </div>
-                    </div>
-                  `;
-                }
-              }}
-              onLoad={() => {
-                console.log('Imagem carregada com sucesso:', imagePath);
               }}
             />
           </div>
