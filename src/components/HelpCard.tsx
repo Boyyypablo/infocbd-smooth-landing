@@ -13,9 +13,11 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
       'Dor crônica': '/dor cronica.png',
       'Saúde mental': '/mental.png',
       'Doenças neurológicas': '/doenças.png',
-      'TEA, TDAH e cuidados paliativos': '/TDAH.PNG',
+      'TEA, TDAH e cuidados paliativos': '/TDAH.png',
     };
-    return imageMap[cardTitle] || null;
+    const path = imageMap[cardTitle];
+    // Codificar espaços e caracteres especiais na URL
+    return path ? encodeURI(path) : null;
   };
 
   const imagePath = getImagePath(title);
@@ -26,56 +28,37 @@ const HelpCard = memo(({ title }: HelpCardProps) => {
       <div className="relative bg-white rounded-t-lg overflow-hidden" style={{ minHeight: '280px' }}>
         {hasCustomImage ? (
           // Card com imagem customizada - estilo minimalista (silhueta preta com elementos brancos)
-          <div className="absolute inset-0 flex items-center justify-center bg-white">
-            <div className="relative w-full h-full flex items-center justify-center p-6 md:p-8">
-              {/* Camada 1: Silhueta preta (fundo) */}
-              <img 
-                src={imagePath}
-                alt=""
-                className="absolute w-full h-full object-contain"
-                style={{
-                  maxHeight: '100%',
-                  maxWidth: '100%',
-                  objectFit: 'contain',
-                  filter: 'brightness(0)',
-                  WebkitFilter: 'brightness(0)',
-                  opacity: 1,
-                  zIndex: 1
-                }}
-                aria-hidden="true"
-              />
-              {/* Camada 2: Elementos brancos internos */}
-              <img 
-                src={imagePath}
-                alt={`Ilustração para ${title}`}
-                className="relative w-full h-full object-contain z-10"
-                style={{
-                  maxHeight: '100%',
-                  maxWidth: '100%',
-                  objectFit: 'contain',
-                  filter: 'brightness(0) invert(1)',
-                  WebkitFilter: 'brightness(0) invert(1)',
-                  mixBlendMode: 'screen',
-                  opacity: 0.9
-                }}
-                onError={(e) => {
-                  // Fallback se a imagem não existir
-                  const target = e.target as HTMLImageElement;
-                  const container = target.closest('.relative');
-                  if (container) {
-                    container.innerHTML = `
-                      <div class="absolute inset-0 bg-gradient-to-b from-[#87CEEB] to-[#B0E0E6]"></div>
-                      <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="text-center text-gray-500 text-sm">
-                          <p>Imagem não encontrada</p>
-                          <p class="text-xs mt-2">Coloque a imagem em /public${imagePath}</p>
-                        </div>
+          <div className="absolute inset-0 flex items-center justify-center bg-white p-6 md:p-8">
+            <img 
+              src={imagePath || ''}
+              alt={`Ilustração para ${title}`}
+              className="w-full h-full object-contain"
+              style={{
+                maxHeight: '100%',
+                maxWidth: '100%',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                console.error('Erro ao carregar imagem:', imagePath);
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#87CEEB] to-[#B0E0E6]"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <div class="text-center text-gray-500 text-sm">
+                        <p>Imagem não encontrada: ${imagePath}</p>
+                        <p class="text-xs mt-2">Verifique se o arquivo existe em /public</p>
                       </div>
-                    `;
-                  }
-                }}
-              />
-            </div>
+                    </div>
+                  `;
+                }
+              }}
+              onLoad={() => {
+                console.log('Imagem carregada com sucesso:', imagePath);
+              }}
+            />
           </div>
         ) : (
           // Cards normais com céu, nuvens e colinas (fallback)
