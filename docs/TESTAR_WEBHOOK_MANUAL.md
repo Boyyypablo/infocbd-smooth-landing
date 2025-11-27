@@ -530,3 +530,7 @@ O status deve estar como `'pago'` e `asaas_payment_id` deve estar preenchido.
 
 
 
+
+
+
+

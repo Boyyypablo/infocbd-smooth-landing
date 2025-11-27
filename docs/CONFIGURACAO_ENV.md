@@ -70,3 +70,7 @@ infocbd-smooth-landing/
 - Use `.env.example` para documentar as variáveis necessárias
 - A `VITE_SUPABASE_ANON_KEY` é segura para uso no frontend (é pública)
 
+
+
+
+

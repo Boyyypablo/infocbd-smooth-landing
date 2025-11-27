@@ -135,3 +135,7 @@ npm run backend
 5. Configurar webhook no Asaas
 6. Testar fluxo completo end-to-end
 
+
+
+
+

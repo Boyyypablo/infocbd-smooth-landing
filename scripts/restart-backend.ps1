@@ -13,3 +13,7 @@ Start-Sleep -Seconds 2
 Write-Host "Iniciando servidor backend..." -ForegroundColor Green
 Write-Host "Execute: npm run backend" -ForegroundColor Cyan
 
+
+
+
+
